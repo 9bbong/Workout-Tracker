@@ -36,15 +36,19 @@
   .ring-pct { font-size: 10px; color: #8b8f98; }
   .muted { font-size: 11px; color: #8b8f98; }
   .error-banner { background: rgba(242,84,45,0.12); border: 1px solid #f2542d; color: #ffb199; font-size: 12px; padding: 8px 12px; border-radius: 8px; margin-bottom: 14px; }
+  .rest-note { background: #1e2128; border: 1px dashed #3a3f4a; color: #8b8f98; font-size: 12.5px; padding: 12px 14px; border-radius: 10px; margin-bottom: 14px; text-align: center; }
   .list { display: flex; flex-direction: column; gap: 12px; }
   .card { background: #1e2128; border: 1px solid #2a2e37; border-radius: 14px; padding: 14px; }
-  .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; }
+  .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px; }
   .card-title-wrap { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
   .card-title { font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .edit-name-input { background: #14161a; border: 1px solid #f2542d; border-radius: 6px; color: #f5f5f0; font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 700; padding: 3px 8px; flex: 1; min-width: 0; }
   .card-head-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
   .pct-badge { font-size: 12px; font-weight: 600; font-family: 'Space Grotesk', sans-serif; min-width: 30px; text-align: right; }
   .icon-btn { background: transparent; border: none; color: #8b8f98; padding: 4px; display: flex; align-items: center; }
+  .weight-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .weight-label { font-size: 11px; color: #8b8f98; flex-shrink: 0; }
+  .weight-input { background: #14161a; border: 1px solid #2a2e37; border-radius: 7px; color: #f2542d; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px; padding: 5px 10px; flex: 1; min-width: 0; }
   .sets-header-row { display: flex; padding: 0 2px 4px; gap: 8px; }
   .set-col-label { font-size: 10px; color: #5c616c; letter-spacing: 0.5px; }
   .set-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
@@ -80,21 +84,65 @@ const SVG = {
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 
+const dayLabels = ["일", "월", "화", "수", "목", "금", "토"];
+
 const todayKey = () => {
   const d = new Date();
   return `log:${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 };
 const todayLabel = () => {
   const d = new Date();
-  const days = ["일", "월", "화", "수", "목", "금", "토"];
-  return `${d.getMonth() + 1}월 ${d.getDate()}일 (${days[d.getDay()]})`;
+  return `${d.getMonth() + 1}월 ${d.getDate()}일 (${dayLabels[d.getDay()]})`;
+};
+const todayDayName = () => dayLabels[new Date().getDay()];
+
+// 요일별 기본 프로그램 (사용자 제공 스케줄)
+const RAW_TEMPLATES = {
+  "월": [
+    ["벤치프레스", "60kg", 8, 5],
+    ["인클라인 덤벨프레스", "20kg", 10, 4],
+    ["케이블 크로스오버", "15kg", 12, 3],
+    ["딥스", "맨몸", 10, 3],
+    ["트라이셉스 푸시다운", "60kg", 12, 3],
+  ],
+  "화": [
+    ["데드리프트", "100kg", 6, 4],
+    ["랫풀다운", "40kg", 10, 4],
+    ["시티드 로우", "70kg", 12, 4],
+    ["바벨컬", "35kg", 10, 3],
+    ["해머컬", "30kg", 12, 3],
+  ],
+  "수": [
+    ["백스쿼트", "80kg", 8, 5],
+    ["레그프레스", "160kg", 10, 4],
+    ["불가리안 스플릿 스쿼트", "30kg", 10, 3],
+    ["레그익스텐션", "47.5kg", 12, 3],
+  ],
+  "목": [
+    ["오버헤드프레스", "40kg", 8, 5],
+    ["사이드 레터럴 레이즈", "10kg", 12, 3],
+    ["페이스풀", "30kg", 12, 3],
+    ["바벨 슈러그", "60kg", 10, 3],
+    ["행잉레그레이즈", "맨몸", 12, 3],
+  ],
+  "금": [
+    ["루마니안 데드리프트", "80kg", 10, 4],
+    ["레그컬", "35kg", 12, 3],
+    ["워킹런지", "맨몸", 12, 3],
+  ],
+  "토": [],
+  "일": [],
 };
 
-const DEFAULT_EXERCISES = () => [
-  { id: uid(), name: "백스쿼트", sets: Array.from({ length: 4 }, () => ({ target: 8, done: 0 })) },
-  { id: uid(), name: "덤벨 프레스", sets: Array.from({ length: 4 }, () => ({ target: 10, done: 0 })) },
-  { id: uid(), name: "친업", sets: Array.from({ length: 4 }, () => ({ target: 6, done: 0 })) },
-];
+function buildTemplate(dayName) {
+  const rows = RAW_TEMPLATES[dayName] || [];
+  return rows.map(([name, weight, reps, setCount]) => ({
+    id: uid(),
+    name,
+    weight,
+    sets: Array.from({ length: setCount }, () => ({ target: reps, done: 0 })),
+  }));
+}
 
 function pct(sets) {
   const target = sets.reduce((a, s) => a + Number(s.target || 0), 0);
@@ -114,23 +162,16 @@ function load() {
   try {
     const raw = localStorage.getItem(todayKey());
     if (raw) { exercises = JSON.parse(raw); return; }
-    const tmplRaw = localStorage.getItem("last-template");
-    if (tmplRaw) {
-      const tmpl = JSON.parse(tmplRaw);
-      exercises = tmpl.map((ex) => ({ id: uid(), name: ex.name, sets: ex.sets.map((s) => ({ target: s.target, done: 0 })) }));
-    } else {
-      exercises = DEFAULT_EXERCISES();
-    }
+    exercises = buildTemplate(todayDayName());
   } catch (e) {
     error = "불러오기에 실패했어요. 새로 시작합니다.";
-    exercises = DEFAULT_EXERCISES();
+    exercises = buildTemplate(todayDayName());
   }
 }
 
 function persist() {
   try {
     localStorage.setItem(todayKey(), JSON.stringify(exercises));
-    localStorage.setItem("last-template", JSON.stringify(exercises.map((ex) => ({ name: ex.name, sets: ex.sets.map((s) => ({ target: s.target })) }))));
   } catch (e) {
     error = "저장에 실패했어요. 변경사항이 유지되지 않을 수 있어요.";
   }
@@ -148,6 +189,10 @@ function tapSet(exId, setIdx) {
 function setTarget(exId, setIdx, val) {
   const v = Math.max(0, Math.min(99, Number(val) || 0));
   exercises.find((e) => e.id === exId).sets[setIdx].target = v;
+  update();
+}
+function setWeight(exId, val) {
+  exercises.find((e) => e.id === exId).weight = val;
   update();
 }
 function addSet(exId) {
@@ -184,7 +229,7 @@ function confirmEdit(exId) {
 function addExercise() {
   const name = newName.trim();
   if (!name) return;
-  exercises.push({ id: uid(), name, sets: [{ target: 8, done: 0 }] });
+  exercises.push({ id: uid(), name, weight: "", sets: [{ target: 8, done: 0 }] });
   newName = "";
   addingExercise = false;
   update();
@@ -197,7 +242,7 @@ function render() {
   let html = `
     <div class="header">
       <div>
-        <div class="eyebrow">WORKOUT LOG</div>
+        <div class="eyebrow">WORKOUT LOG · ${todayDayName()}요일 프로그램</div>
         <h1>${todayLabel()}</h1>
       </div>
       <div class="ring-wrap">
@@ -210,6 +255,7 @@ function render() {
       </div>
     </div>
     ${error ? `<div class="error-banner">${error}</div>` : ""}
+    ${exercises.length === 0 ? `<div class="rest-note">오늘은 지정된 프로그램이 없어요. 아래에서 직접 운동을 추가해보세요.</div>` : ""}
     <div class="list">
   `;
 
@@ -233,6 +279,10 @@ function render() {
               <button class="icon-btn" data-action="removeExercise" data-id="${ex.id}">${SVG.trash}</button>
             `}
         </div>
+      </div>
+      <div class="weight-row">
+        <span class="weight-label">중량</span>
+        <input class="weight-input" data-action="setWeight" data-id="${ex.id}" value="${escapeHtml(ex.weight ?? "")}" placeholder="예: 60kg / 맨몸" />
       </div>
       <div class="sets-header-row">
         <span class="set-col-label" style="flex:0 0 32px">세트</span>
@@ -274,7 +324,7 @@ function render() {
     html += `<button class="add-exercise-btn" data-action="startAdd">${SVG.plus} 운동 추가</button>`;
   }
 
-  html += `<p class="foot-note">기록은 이 기기에 오늘 날짜 기준으로 저장됩니다.</p>`;
+  html += `<p class="foot-note">요일에 맞는 기본 프로그램이 자동으로 표시되고, 기록은 이 기기에 오늘 날짜 기준으로 저장됩니다.</p>`;
 
   app.innerHTML = html;
 
@@ -326,6 +376,9 @@ document.addEventListener("click", (e) => {
 document.addEventListener("change", (e) => {
   if (e.target.dataset.action === "setTarget") {
     setTarget(e.target.dataset.id, Number(e.target.dataset.idx), e.target.value);
+  }
+  if (e.target.dataset.action === "setWeight") {
+    setWeight(e.target.dataset.id, e.target.value);
   }
 });
 
