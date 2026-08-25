@@ -46,19 +46,21 @@
   .card-head-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
   .pct-badge { font-size: 12px; font-weight: 600; font-family: 'Space Grotesk', sans-serif; min-width: 30px; text-align: right; }
   .icon-btn { background: transparent; border: none; color: #8b8f98; padding: 4px; display: flex; align-items: center; }
-  .weight-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-  .weight-label { font-size: 11px; color: #8b8f98; flex-shrink: 0; }
-  .weight-input { background: #14161a; border: 1px solid #2a2e37; border-radius: 7px; color: #f2542d; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px; padding: 5px 10px; flex: 1; min-width: 0; }
-  .sets-header-row { display: flex; padding: 0 2px 4px; gap: 8px; }
-  .set-col-label { font-size: 10px; color: #5c616c; letter-spacing: 0.5px; }
-  .set-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-  .set-num { flex: 0 0 32px; font-size: 12px; color: #8b8f98; font-family: 'Space Grotesk', sans-serif; }
-  .set-tap-btn { flex: 1; position: relative; height: 36px; border-radius: 8px; border: 1px solid #3a3f4a; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-  .set-fill { position: absolute; left: 0; top: 0; bottom: 0; transition: width 0.2s ease; }
-  .set-label { position: relative; font-size: 12.5px; font-weight: 500; color: #f5f5f0; }
-  .target-input { flex: 0 0 56px; background: #14161a; border: 1px solid #2a2e37; border-radius: 8px; color: #f5f5f0; font-size: 13px; text-align: center; padding: 8px 4px; }
-  .set-btn-row { display: flex; gap: 8px; margin-top: 4px; }
-  .small-btn { display: flex; align-items: center; gap: 4px; background: transparent; border: 1px dashed #3a3f4a; color: #8b8f98; font-size: 11.5px; padding: 5px 9px; border-radius: 7px; }
+  .info-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .info-field { flex: 1; min-width: 0; }
+  .info-label { font-size: 10px; color: #5c616c; letter-spacing: 0.5px; display: block; margin-bottom: 3px; }
+  .weight-input { width: 100%; background: #14161a; border: 1px solid #2a2e37; border-radius: 7px; color: #f2542d; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px; padding: 6px 10px; }
+  .reps-input { width: 100%; background: #14161a; border: 1px solid #2a2e37; border-radius: 7px; color: #f5f5f0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px; padding: 6px 10px; text-align: center; }
+  .tap-row { display: flex; align-items: center; gap: 14px; }
+  .tap-btn-small { flex: 0 0 56px; width: 56px; height: 56px; border-radius: 14px; border: 1px solid #3a3f4a; background: rgba(242,84,45,0.10); display: flex; align-items: center; justify-content: center; }
+  .set-gauge-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .set-gauge { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.2s ease; }
+  .set-gauge-inner { width: 48px; height: 48px; border-radius: 50%; background: #1e2128; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .set-gauge-pct { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 700; line-height: 1; }
+  .set-gauge-count { font-size: 9px; color: #8b8f98; margin-top: 1px; }
+  .target-edit-row { display: flex; align-items: center; gap: 4px; }
+  .target-edit-row span { font-size: 9px; color: #5c616c; }
+  .target-sets-input { width: 34px; background: transparent; border: none; border-bottom: 1px dashed #3a3f4a; color: #a8adb8; font-size: 11px; font-weight: 700; font-family: 'Space Grotesk', sans-serif; text-align: center; padding: 1px; }
   .add-exercise-btn { width: 100%; margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 6px; background: #f2542d; color: #14161a; border: none; border-radius: 10px; padding: 12px; font-weight: 700; font-size: 14px; font-family: 'Space Grotesk', sans-serif; }
   .add-card { margin-top: 16px; display: flex; gap: 8px; align-items: center; }
   .add-input { flex: 1; background: #1e2128; border: 1px solid #2a2e37; border-radius: 9px; color: #f5f5f0; padding: 10px 12px; font-size: 13px; min-width: 0; }
@@ -73,13 +75,14 @@
 <script>
 const SVG = {
   dumbbell: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f2542d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z"/><path d="m21.5 21.5-1.4-1.4"/><path d="M3.9 3.9 2.5 2.5"/><path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z"/></svg>`,
-  plus: `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>`,
-  minus: `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>`,
+  plus: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>`,
   trash: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`,
   reset: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>`,
   pencil: `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>`,
   check: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`,
   x: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`,
+  repeat: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f2542d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>`,
+  repeatDone: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>`,
 };
 
 const uid = () => Math.random().toString(36).slice(2, 9);
@@ -96,7 +99,7 @@ const todayLabel = () => {
 };
 const todayDayName = () => dayLabels[new Date().getDay()];
 
-// 요일별 기본 프로그램 (사용자 제공 스케줄)
+// 요일별 기본 프로그램: [운동명, 중량, 목표 횟수(1세트당), 목표 세트 수]
 const RAW_TEMPLATES = {
   "월": [
     ["벤치프레스", "60kg", 8, 5],
@@ -136,19 +139,20 @@ const RAW_TEMPLATES = {
 
 function buildTemplate(dayName) {
   const rows = RAW_TEMPLATES[dayName] || [];
-  return rows.map(([name, weight, reps, setCount]) => ({
+  return rows.map(([name, weight, reps, targetSets]) => ({
     id: uid(),
     name,
     weight,
-    sets: Array.from({ length: setCount }, () => ({ target: reps, done: 0 })),
+    reps,
+    targetSets,
+    doneSets: 0,
   }));
 }
 
-function pct(sets) {
-  const target = sets.reduce((a, s) => a + Number(s.target || 0), 0);
-  const done = sets.reduce((a, s) => a + Math.min(s.done, s.target || 0), 0);
+function pct(ex) {
+  const target = Number(ex.targetSets || 0);
   if (target === 0) return 0;
-  return Math.round((done / target) * 100);
+  return Math.round((Math.min(ex.doneSets, target) / target) * 100);
 }
 
 let exercises = [];
@@ -158,7 +162,22 @@ let newName = "";
 let editingId = null;
 let editValue = "";
 
+function purgeOldLogs() {
+  try {
+    const keep = todayKey();
+    const toRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith("log:") && k !== keep) toRemove.push(k);
+    }
+    toRemove.forEach((k) => localStorage.removeItem(k));
+  } catch (e) {
+    // 삭제 실패는 무시하고 계속 진행
+  }
+}
+
 function load() {
+  purgeOldLogs();
   try {
     const raw = localStorage.getItem(todayKey());
     if (raw) { exercises = JSON.parse(raw); return; }
@@ -179,31 +198,24 @@ function persist() {
 
 function update() { persist(); render(); }
 
-function tapSet(exId, setIdx) {
+function tapExercise(exId) {
   const ex = exercises.find((e) => e.id === exId);
-  const s = ex.sets[setIdx];
-  const cap = s.target > 0 ? s.target : 999;
-  s.done = s.done >= cap ? 0 : s.done + 1;
+  const cap = ex.targetSets > 0 ? ex.targetSets : 999;
+  ex.doneSets = ex.doneSets >= cap ? 0 : ex.doneSets + 1;
   update();
 }
-function setTarget(exId, setIdx, val) {
+function setTargetSets(exId, val) {
+  const v = Math.max(0, Math.min(30, Number(val) || 0));
+  exercises.find((e) => e.id === exId).targetSets = v;
+  update();
+}
+function setReps(exId, val) {
   const v = Math.max(0, Math.min(99, Number(val) || 0));
-  exercises.find((e) => e.id === exId).sets[setIdx].target = v;
+  exercises.find((e) => e.id === exId).reps = v;
   update();
 }
 function setWeight(exId, val) {
   exercises.find((e) => e.id === exId).weight = val;
-  update();
-}
-function addSet(exId) {
-  const ex = exercises.find((e) => e.id === exId);
-  const last = ex.sets[ex.sets.length - 1];
-  ex.sets.push({ target: last ? last.target : 8, done: 0 });
-  update();
-}
-function removeSet(exId) {
-  const ex = exercises.find((e) => e.id === exId);
-  ex.sets.pop();
   update();
 }
 function removeExercise(exId) {
@@ -211,7 +223,7 @@ function removeExercise(exId) {
   update();
 }
 function resetExercise(exId) {
-  exercises.find((e) => e.id === exId).sets.forEach((s) => (s.done = 0));
+  exercises.find((e) => e.id === exId).doneSets = 0;
   update();
 }
 function startEdit(exId) {
@@ -229,7 +241,7 @@ function confirmEdit(exId) {
 function addExercise() {
   const name = newName.trim();
   if (!name) return;
-  exercises.push({ id: uid(), name, weight: "", sets: [{ target: 8, done: 0 }] });
+  exercises.push({ id: uid(), name, weight: "", reps: 10, targetSets: 3, doneSets: 0 });
   newName = "";
   addingExercise = false;
   update();
@@ -237,7 +249,7 @@ function addExercise() {
 
 function render() {
   const app = document.getElementById("app");
-  const totalPct = exercises.length ? Math.round(exercises.reduce((a, ex) => a + pct(ex.sets), 0) / exercises.length) : 0;
+  const totalPct = exercises.length ? Math.round(exercises.reduce((a, ex) => a + pct(ex), 0) / exercises.length) : 0;
 
   let html = `
     <div class="header">
@@ -260,7 +272,10 @@ function render() {
   `;
 
   exercises.forEach((ex) => {
-    const p = pct(ex.sets);
+    const p = pct(ex);
+    const reached = ex.targetSets > 0 && ex.doneSets >= ex.targetSets;
+    const fillW = ex.targetSets > 0 ? Math.min(100, (ex.doneSets / ex.targetSets) * 100) : 0;
+
     html += `<div class="card">
       <div class="card-head">
         <div class="card-title-wrap">
@@ -280,34 +295,36 @@ function render() {
             `}
         </div>
       </div>
-      <div class="weight-row">
-        <span class="weight-label">중량</span>
-        <input class="weight-input" data-action="setWeight" data-id="${ex.id}" value="${escapeHtml(ex.weight ?? "")}" placeholder="예: 60kg / 맨몸" />
+
+      <div class="info-row">
+        <div class="info-field">
+          <span class="info-label">중량</span>
+          <input class="weight-input" data-action="setWeight" data-id="${ex.id}" value="${escapeHtml(ex.weight ?? "")}" placeholder="예: 60kg / 맨몸" />
+        </div>
+        <div class="info-field" style="flex: 0 0 78px;">
+          <span class="info-label">목표 횟수</span>
+          <input class="reps-input" type="number" data-action="setReps" data-id="${ex.id}" value="${ex.reps}" />
+        </div>
       </div>
-      <div class="sets-header-row">
-        <span class="set-col-label" style="flex:0 0 32px">세트</span>
-        <span class="set-col-label" style="flex:1">완료 (탭해서 기록)</span>
-        <span class="set-col-label" style="flex:0 0 56px;text-align:center">목표</span>
-      </div>`;
 
-    ex.sets.forEach((s, i) => {
-      const cap = s.target || 0;
-      const reached = cap > 0 && s.done >= cap;
-      const fillW = cap > 0 ? Math.min(100, (s.done / cap) * 100) : 0;
-      html += `<div class="set-row">
-        <span class="set-num">${i + 1}</span>
-        <button class="set-tap-btn" data-action="tapSet" data-id="${ex.id}" data-idx="${i}"
+      <div class="tap-row">
+        <button class="tap-btn-small" data-action="tapExercise" data-id="${ex.id}"
           style="background:${reached ? "rgba(45,212,191,0.14)" : "rgba(242,84,45,0.10)"}; border-color:${reached ? "#2dd4bf" : "#3a3f4a"}">
-          <span class="set-fill" style="width:${fillW}%; background:${reached ? "#2dd4bf" : "#f2542d"}"></span>
-          <span class="set-label">${s.done === 0 ? "탭하여 시작" : `${s.done}회 완료`}</span>
+          ${reached ? SVG.repeatDone : SVG.repeat}
         </button>
-        <input class="target-input" type="number" data-action="setTarget" data-id="${ex.id}" data-idx="${i}" value="${s.target}" />
-      </div>`;
-    });
-
-    html += `<div class="set-btn-row">
-        <button class="small-btn" data-action="addSet" data-id="${ex.id}">${SVG.plus} 세트 추가</button>
-        ${ex.sets.length > 1 ? `<button class="small-btn" data-action="removeSet" data-id="${ex.id}">${SVG.minus} 세트 제거</button>` : ""}
+        <div class="set-gauge-col">
+          <div class="set-gauge" style="background: conic-gradient(${reached ? "#2dd4bf" : "#f2542d"} ${p * 3.6}deg, #2a2e37 0deg)">
+            <div class="set-gauge-inner">
+              <span class="set-gauge-pct" style="color:${reached ? "#2dd4bf" : "#f5f5f0"}">${p}%</span>
+              <span class="set-gauge-count">${ex.doneSets}/${ex.targetSets}세트</span>
+            </div>
+          </div>
+          <div class="target-edit-row">
+            <span>목표</span>
+            <input class="target-sets-input" type="number" data-action="setTargetSets" data-id="${ex.id}" value="${ex.targetSets}" />
+            <span>세트</span>
+          </div>
+        </div>
       </div>
     </div>`;
   });
@@ -324,7 +341,7 @@ function render() {
     html += `<button class="add-exercise-btn" data-action="startAdd">${SVG.plus} 운동 추가</button>`;
   }
 
-  html += `<p class="foot-note">요일에 맞는 기본 프로그램이 자동으로 표시되고, 기록은 이 기기에 오늘 날짜 기준으로 저장됩니다.</p>`;
+  html += `<p class="foot-note">요일에 맞는 기본 프로그램이 자동으로 표시되고, 기록은 이 기기에 오늘 날짜 기준으로만 저장됩니다.</p>`;
 
   app.innerHTML = html;
 
@@ -358,11 +375,8 @@ document.addEventListener("click", (e) => {
   if (!el) return;
   const action = el.dataset.action;
   const id = el.dataset.id;
-  const idx = el.dataset.idx !== undefined ? Number(el.dataset.idx) : undefined;
   switch (action) {
-    case "tapSet": tapSet(id, idx); break;
-    case "addSet": addSet(id); break;
-    case "removeSet": removeSet(id); break;
+    case "tapExercise": tapExercise(id); break;
     case "removeExercise": removeExercise(id); break;
     case "resetExercise": resetExercise(id); break;
     case "startEdit": startEdit(id); break;
@@ -374,8 +388,11 @@ document.addEventListener("click", (e) => {
 });
 
 document.addEventListener("change", (e) => {
-  if (e.target.dataset.action === "setTarget") {
-    setTarget(e.target.dataset.id, Number(e.target.dataset.idx), e.target.value);
+  if (e.target.dataset.action === "setTargetSets") {
+    setTargetSets(e.target.dataset.id, e.target.value);
+  }
+  if (e.target.dataset.action === "setReps") {
+    setReps(e.target.dataset.id, e.target.value);
   }
   if (e.target.dataset.action === "setWeight") {
     setWeight(e.target.dataset.id, e.target.value);
