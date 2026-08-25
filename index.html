@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>운동 세트 체크리스트</title>
+<meta name="theme-color" content="#14161a" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="운동체크" />
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<link rel="icon" href="icon-192.png" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap');
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; background: #14161a; }
+  body {
+    color: #f5f5f0;
+    font-family: 'Inter', -apple-system, sans-serif;
+    padding: max(20px, env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom));
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  button { font-family: inherit; cursor: pointer; }
+  input[type=number]::-webkit-inner-spin-button { opacity: 1; }
+  input, button { -webkit-appearance: none; appearance: none; }
+
+  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .eyebrow { font-family: 'Space Grotesk', sans-serif; font-size: 11px; letter-spacing: 2px; color: #f2542d; font-weight: 700; }
+  h1 { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; margin: 2px 0 0; }
+  .ring-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .ring { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .ring-inner { width: 44px; height: 44px; border-radius: 50%; background: #14161a; display: flex; align-items: baseline; justify-content: center; gap: 1px; }
+  .ring-num { font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700; }
+  .ring-pct { font-size: 10px; color: #8b8f98; }
+  .muted { font-size: 11px; color: #8b8f98; }
+  .error-banner { background: rgba(242,84,45,0.12); border: 1px solid #f2542d; color: #ffb199; font-size: 12px; padding: 8px 12px; border-radius: 8px; margin-bottom: 14px; }
+  .list { display: flex; flex-direction: column; gap: 12px; }
+  .card { background: #1e2128; border: 1px solid #2a2e37; border-radius: 14px; padding: 14px; }
+  .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 8px; }
+  .card-title-wrap { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
+  .card-title { font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .edit-name-input { background: #14161a; border: 1px solid #f2542d; border-radius: 6px; color: #f5f5f0; font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 700; padding: 3px 8px; flex: 1; min-width: 0; }
+  .card-head-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .pct-badge { font-size: 12px; font-weight: 600; font-family: 'Space Grotesk', sans-serif; min-width: 30px; text-align: right; }
+  .icon-btn { background: transparent; border: none; color: #8b8f98; padding: 4px; display: flex; align-items: center; }
+  .sets-header-row { display: flex; padding: 0 2px 4px; gap: 8px; }
+  .set-col-label { font-size: 10px; color: #5c616c; letter-spacing: 0.5px; }
+  .set-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .set-num { flex: 0 0 32px; font-size: 12px; color: #8b8f98; font-family: 'Space Grotesk', sans-serif; }
+  .set-tap-btn { flex: 1; position: relative; height: 36px; border-radius: 8px; border: 1px solid #3a3f4a; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .set-fill { position: absolute; left: 0; top: 0; bottom: 0; transition: width 0.2s ease; }
+  .set-label { position: relative; font-size: 12.5px; font-weight: 500; color: #f5f5f0; }
+  .target-input { flex: 0 0 56px; background: #14161a; border: 1px solid #2a2e37; border-radius: 8px; color: #f5f5f0; font-size: 13px; text-align: center; padding: 8px 4px; }
+  .set-btn-row { display: flex; gap: 8px; margin-top: 4px; }
+  .small-btn { display: flex; align-items: center; gap: 4px; background: transparent; border: 1px dashed #3a3f4a; color: #8b8f98; font-size: 11.5px; padding: 5px 9px; border-radius: 7px; }
+  .add-exercise-btn { width: 100%; margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 6px; background: #f2542d; color: #14161a; border: none; border-radius: 10px; padding: 12px; font-weight: 700; font-size: 14px; font-family: 'Space Grotesk', sans-serif; }
+  .add-card { margin-top: 16px; display: flex; gap: 8px; align-items: center; }
+  .add-input { flex: 1; background: #1e2128; border: 1px solid #2a2e37; border-radius: 9px; color: #f5f5f0; padding: 10px 12px; font-size: 13px; min-width: 0; }
+  .add-confirm-btn { background: #f2542d; color: #14161a; border: none; border-radius: 9px; padding: 10px 14px; font-weight: 700; font-size: 13px; flex-shrink: 0; }
+  .foot-note { text-align: center; font-size: 11px; color: #5c616c; margin-top: 20px; }
+  svg { display: block; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const SVG = {
+  dumbbell: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f2542d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z"/><path d="m21.5 21.5-1.4-1.4"/><path d="M3.9 3.9 2.5 2.5"/><path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z"/></svg>`,
+  plus: `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>`,
+  minus: `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>`,
+  trash: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`,
+  reset: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>`,
+  pencil: `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>`,
+  check: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`,
+  x: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`,
+};
+
+const uid = () => Math.random().toString(36).slice(2, 9);
+
+const todayKey = () => {
+  const d = new Date();
+  return `log:${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
+const todayLabel = () => {
+  const d = new Date();
+  const days = ["일", "월", "화", "수", "목", "금", "토"];
+  return `${d.getMonth() + 1}월 ${d.getDate()}일 (${days[d.getDay()]})`;
+};
+
+const DEFAULT_EXERCISES = () => [
+  { id: uid(), name: "백스쿼트", sets: Array.from({ length: 4 }, () => ({ target: 8, done: 0 })) },
+  { id: uid(), name: "덤벨 프레스", sets: Array.from({ length: 4 }, () => ({ target: 10, done: 0 })) },
+  { id: uid(), name: "친업", sets: Array.from({ length: 4 }, () => ({ target: 6, done: 0 })) },
+];
+
+function pct(sets) {
+  const target = sets.reduce((a, s) => a + Number(s.target || 0), 0);
+  const done = sets.reduce((a, s) => a + Math.min(s.done, s.target || 0), 0);
+  if (target === 0) return 0;
+  return Math.round((done / target) * 100);
+}
+
+let exercises = [];
+let error = null;
+let addingExercise = false;
+let newName = "";
+let editingId = null;
+let editValue = "";
+
+function load() {
+  try {
+    const raw = localStorage.getItem(todayKey());
+    if (raw) { exercises = JSON.parse(raw); return; }
+    const tmplRaw = localStorage.getItem("last-template");
+    if (tmplRaw) {
+      const tmpl = JSON.parse(tmplRaw);
+      exercises = tmpl.map((ex) => ({ id: uid(), name: ex.name, sets: ex.sets.map((s) => ({ target: s.target, done: 0 })) }));
+    } else {
+      exercises = DEFAULT_EXERCISES();
+    }
+  } catch (e) {
+    error = "불러오기에 실패했어요. 새로 시작합니다.";
+    exercises = DEFAULT_EXERCISES();
+  }
+}
+
+function persist() {
+  try {
+    localStorage.setItem(todayKey(), JSON.stringify(exercises));
+    localStorage.setItem("last-template", JSON.stringify(exercises.map((ex) => ({ name: ex.name, sets: ex.sets.map((s) => ({ target: s.target })) }))));
+  } catch (e) {
+    error = "저장에 실패했어요. 변경사항이 유지되지 않을 수 있어요.";
+  }
+}
+
+function update() { persist(); render(); }
+
+function tapSet(exId, setIdx) {
+  const ex = exercises.find((e) => e.id === exId);
+  const s = ex.sets[setIdx];
+  const cap = s.target > 0 ? s.target : 999;
+  s.done = s.done >= cap ? 0 : s.done + 1;
+  update();
+}
+function setTarget(exId, setIdx, val) {
+  const v = Math.max(0, Math.min(99, Number(val) || 0));
+  exercises.find((e) => e.id === exId).sets[setIdx].target = v;
+  update();
+}
+function addSet(exId) {
+  const ex = exercises.find((e) => e.id === exId);
+  const last = ex.sets[ex.sets.length - 1];
+  ex.sets.push({ target: last ? last.target : 8, done: 0 });
+  update();
+}
+function removeSet(exId) {
+  const ex = exercises.find((e) => e.id === exId);
+  ex.sets.pop();
+  update();
+}
+function removeExercise(exId) {
+  exercises = exercises.filter((e) => e.id !== exId);
+  update();
+}
+function resetExercise(exId) {
+  exercises.find((e) => e.id === exId).sets.forEach((s) => (s.done = 0));
+  update();
+}
+function startEdit(exId) {
+  editingId = exId;
+  editValue = exercises.find((e) => e.id === exId).name;
+  render();
+}
+function confirmEdit(exId) {
+  const name = editValue.trim();
+  if (name) exercises.find((e) => e.id === exId).name = name;
+  editingId = null;
+  editValue = "";
+  update();
+}
+function addExercise() {
+  const name = newName.trim();
+  if (!name) return;
+  exercises.push({ id: uid(), name, sets: [{ target: 8, done: 0 }] });
+  newName = "";
+  addingExercise = false;
+  update();
+}
+
+function render() {
+  const app = document.getElementById("app");
+  const totalPct = exercises.length ? Math.round(exercises.reduce((a, ex) => a + pct(ex.sets), 0) / exercises.length) : 0;
+
+  let html = `
+    <div class="header">
+      <div>
+        <div class="eyebrow">WORKOUT LOG</div>
+        <h1>${todayLabel()}</h1>
+      </div>
+      <div class="ring-wrap">
+        <div class="ring" style="background: conic-gradient(#f2542d ${totalPct * 3.6}deg, #2a2e37 0deg)">
+          <div class="ring-inner">
+            <span class="ring-num">${totalPct}</span><span class="ring-pct">%</span>
+          </div>
+        </div>
+        <span class="muted">오늘 완수율</span>
+      </div>
+    </div>
+    ${error ? `<div class="error-banner">${error}</div>` : ""}
+    <div class="list">
+  `;
+
+  exercises.forEach((ex) => {
+    const p = pct(ex.sets);
+    html += `<div class="card">
+      <div class="card-head">
+        <div class="card-title-wrap">
+          ${SVG.dumbbell}
+          ${editingId === ex.id
+            ? `<input class="edit-name-input" id="edit-input-${ex.id}" value="${escapeHtml(editValue)}" />`
+            : `<span class="card-title">${escapeHtml(ex.name)}</span>`}
+        </div>
+        <div class="card-head-right">
+          ${editingId === ex.id
+            ? `<button class="icon-btn" data-action="confirmEdit" data-id="${ex.id}">${SVG.check}</button>`
+            : `
+              <span class="pct-badge" style="color:${p >= 100 ? "#2dd4bf" : "#a8adb8"}">${p}%</span>
+              <button class="icon-btn" data-action="startEdit" data-id="${ex.id}">${SVG.pencil}</button>
+              <button class="icon-btn" data-action="resetExercise" data-id="${ex.id}">${SVG.reset}</button>
+              <button class="icon-btn" data-action="removeExercise" data-id="${ex.id}">${SVG.trash}</button>
+            `}
+        </div>
+      </div>
+      <div class="sets-header-row">
+        <span class="set-col-label" style="flex:0 0 32px">세트</span>
+        <span class="set-col-label" style="flex:1">완료 (탭해서 기록)</span>
+        <span class="set-col-label" style="flex:0 0 56px;text-align:center">목표</span>
+      </div>`;
+
+    ex.sets.forEach((s, i) => {
+      const cap = s.target || 0;
+      const reached = cap > 0 && s.done >= cap;
+      const fillW = cap > 0 ? Math.min(100, (s.done / cap) * 100) : 0;
+      html += `<div class="set-row">
+        <span class="set-num">${i + 1}</span>
+        <button class="set-tap-btn" data-action="tapSet" data-id="${ex.id}" data-idx="${i}"
+          style="background:${reached ? "rgba(45,212,191,0.14)" : "rgba(242,84,45,0.10)"}; border-color:${reached ? "#2dd4bf" : "#3a3f4a"}">
+          <span class="set-fill" style="width:${fillW}%; background:${reached ? "#2dd4bf" : "#f2542d"}"></span>
+          <span class="set-label">${s.done === 0 ? "탭하여 시작" : `${s.done}회 완료`}</span>
+        </button>
+        <input class="target-input" type="number" data-action="setTarget" data-id="${ex.id}" data-idx="${i}" value="${s.target}" />
+      </div>`;
+    });
+
+    html += `<div class="set-btn-row">
+        <button class="small-btn" data-action="addSet" data-id="${ex.id}">${SVG.plus} 세트 추가</button>
+        ${ex.sets.length > 1 ? `<button class="small-btn" data-action="removeSet" data-id="${ex.id}">${SVG.minus} 세트 제거</button>` : ""}
+      </div>
+    </div>`;
+  });
+
+  html += `</div>`;
+
+  if (addingExercise) {
+    html += `<div class="add-card">
+      <input class="add-input" id="new-exercise-input" placeholder="운동 이름 (예: 데드리프트)" value="${escapeHtml(newName)}" />
+      <button class="add-confirm-btn" data-action="addExercise">추가</button>
+      <button class="icon-btn" data-action="cancelAdd">${SVG.x}</button>
+    </div>`;
+  } else {
+    html += `<button class="add-exercise-btn" data-action="startAdd">${SVG.plus} 운동 추가</button>`;
+  }
+
+  html += `<p class="foot-note">기록은 이 기기에 오늘 날짜 기준으로 저장됩니다.</p>`;
+
+  app.innerHTML = html;
+
+  if (editingId) {
+    const input = document.getElementById(`edit-input-${editingId}`);
+    if (input) {
+      input.focus();
+      input.selectionStart = input.selectionEnd = input.value.length;
+      input.addEventListener("input", (e) => { editValue = e.target.value; });
+      input.addEventListener("keydown", (e) => { if (e.key === "Enter") confirmEdit(editingId); });
+    }
+  }
+  if (addingExercise) {
+    const input = document.getElementById("new-exercise-input");
+    if (input) {
+      input.focus();
+      input.addEventListener("input", (e) => { newName = e.target.value; });
+      input.addEventListener("keydown", (e) => { if (e.key === "Enter") addExercise(); });
+    }
+  }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+document.addEventListener("click", (e) => {
+  const el = e.target.closest("[data-action]");
+  if (!el) return;
+  const action = el.dataset.action;
+  const id = el.dataset.id;
+  const idx = el.dataset.idx !== undefined ? Number(el.dataset.idx) : undefined;
+  switch (action) {
+    case "tapSet": tapSet(id, idx); break;
+    case "addSet": addSet(id); break;
+    case "removeSet": removeSet(id); break;
+    case "removeExercise": removeExercise(id); break;
+    case "resetExercise": resetExercise(id); break;
+    case "startEdit": startEdit(id); break;
+    case "confirmEdit": confirmEdit(id); break;
+    case "startAdd": addingExercise = true; render(); break;
+    case "cancelAdd": addingExercise = false; newName = ""; render(); break;
+    case "addExercise": addExercise(); break;
+  }
+});
+
+document.addEventListener("change", (e) => {
+  if (e.target.dataset.action === "setTarget") {
+    setTarget(e.target.dataset.id, Number(e.target.dataset.idx), e.target.value);
+  }
+});
+
+load();
+render();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
