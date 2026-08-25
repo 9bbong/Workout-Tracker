@@ -413,6 +413,24 @@ document.addEventListener("change", (e) => {
 load();
 render();
 
+// 자정이 지난 뒤 앱이 백그라운드에서 다시 열릴 때(재개) 오늘 날짜를 다시 확인해서
+// 요일별 프로그램을 새로 불러온다. (완전 종료 후 재실행이 아니면 페이지가
+// 새로고침되지 않아 어제 화면이 그대로 남는 문제를 방지)
+let currentDateKey = todayKey();
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") {
+    const newKey = todayKey();
+    if (newKey !== currentDateKey) {
+      currentDateKey = newKey;
+      editingId = null;
+      addingExercise = false;
+      load();
+      render();
+    }
+  }
+});
+
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("sw.js").catch(() => {});
